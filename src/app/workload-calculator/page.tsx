@@ -66,7 +66,9 @@ export default function Home() {
 				alert(
 					`업무 기준: ${beautifyNumber(workDays)}일 (${beautifyNumber(
 						workHours
-					)}시간)\n\nBE 개발자 1인 당 (4인 기준): ${beautifyNumber(workDaysPerPerson)}일`
+					)}시간)\n\nBE 개발자 1인 당 (4인 기준): ${beautifyNumber(
+						workDaysPerPerson
+					)}일 (휴일 포함: ${beautifyNumber(containWeekend(workDaysPerPerson))}일)`
 				),
 		}
 	);
@@ -240,4 +242,8 @@ function weightedMean(x: number[], w: number[], n: number) {
 
 function beautifyNumber(num: number) {
 	return parseFloat(num.toFixed(1));
+}
+
+function containWeekend(days: number) {
+	return Math.floor(days / 5) * 7 + (days % 5);
 }
