@@ -1,11 +1,9 @@
 "use client";
 
 import {
-	Box,
 	Button,
 	Divider,
 	HStack,
-	Heading,
 	ListItem,
 	NumberDecrementStepper,
 	NumberIncrementStepper,
@@ -24,7 +22,7 @@ import {
 	RangeSliderFilledTrack,
 	RangeSliderThumb,
 } from "@chakra-ui/react";
-import { ReactNode, useCallback, useMemo, useState } from "react";
+import { ReactNode, useMemo, useState } from "react";
 import useSWRMutation from "swr/mutation";
 
 export default function Home() {
@@ -41,22 +39,37 @@ export default function Home() {
 		() => minWorkTime + (maxWorkTime - minWorkTime) / 2,
 		[minWorkTime, maxWorkTime]
 	);
-	const calculate = useSWRMutation("calculate", async () => {
-		await delay(500);
-		const x = [minWorkTime * workAmount, middleWorkTime * workAmount, maxWorkTime * workAmount];
-		const w = [easy, normal, hard];
-		const n = x.length;
-		const workHours = weightedMean(x, w, n);
-		const workDays = workHours / 8;
-		const workDaysPerPerson = workDays / 4;
+	const calculate = useSWRMutation(
+		"calculate",
+		async () => {
+			await delay(500);
 
-		alert(
-			`업무 기준: ${beautifyNumber(workDays)}일 (${beautifyNumber(
-				workHours
-			)}시간)\n\nBE 개발자 1인 당 (4인 기준): ${beautifyNumber(workDaysPerPerson)}일`
-		);
-		return true;
-	});
+			const x = [
+				minWorkTime * workAmount,
+				middleWorkTime * workAmount,
+				maxWorkTime * workAmount,
+			];
+			const w = [easy, normal, hard];
+			const n = x.length;
+			const workHours = weightedMean(x, w, n);
+			const workDays = workHours / 8;
+			const workDaysPerPerson = workDays / 4;
+
+			return {
+				workHours,
+				workDays,
+				workDaysPerPerson,
+			};
+		},
+		{
+			onSuccess: ({ workHours, workDays, workDaysPerPerson }) =>
+				alert(
+					`업무 기준: ${beautifyNumber(workDays)}일 (${beautifyNumber(
+						workHours
+					)}시간)\n\nBE 개발자 1인 당 (4인 기준): ${beautifyNumber(workDaysPerPerson)}일`
+				),
+		}
+	);
 
 	return (
 		<VStack py={20} spacing={14} w={600} mx="auto">
@@ -158,22 +171,6 @@ export default function Home() {
 	);
 }
 
-function delay(ms: number) {
-	return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-function weightedMean(x: number[], w: number[], n: number) {
-	let sum = 0,
-		numWeight = 0;
-
-	for (let i = 0; i < n; i++) {
-		numWeight = numWeight + x[i] * w[i];
-		sum = sum + w[i];
-	}
-
-	return numWeight / sum;
-}
-
 function SectionStack({ children }: { children: ReactNode }) {
 	return (
 		<VStack alignItems={"flex-start"} w="100%" spacing={3}>
@@ -223,6 +220,22 @@ function NumberInputWithTitle({
 			</NumberInput>
 		</VStack>
 	);
+}
+
+function delay(ms: number) {
+	return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function weightedMean(x: number[], w: number[], n: number) {
+	let sum = 0,
+		numWeight = 0;
+
+	for (let i = 0; i < n; i++) {
+		numWeight = numWeight + x[i] * w[i];
+		sum = sum + w[i];
+	}
+
+	return numWeight / sum;
 }
 
 function beautifyNumber(num: number) {
