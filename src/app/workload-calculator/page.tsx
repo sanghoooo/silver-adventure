@@ -148,7 +148,7 @@ export default function Home() {
 						}
 					/>
 					<NumberInputWithTitle
-						title={`높음 (복잡도 or 절대량, ${maxWorkTime}일 소요)`}
+						title={`어려움 (복잡도 or 절대량, ${maxWorkTime}일 소요)`}
 						value={hard}
 						handleChange={(value) =>
 							setDifficulty((previous) => ({ ...previous, hard: Number(value) }))
