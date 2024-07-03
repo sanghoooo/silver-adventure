@@ -25,6 +25,7 @@ import {
 	RangeSliderThumb,
 } from "@chakra-ui/react";
 import { ReactNode, useCallback, useMemo, useState } from "react";
+import useSWRMutation from "swr/mutation";
 
 export default function Home() {
 	const [values, setValues] = useState([10, 40]);
@@ -40,8 +41,8 @@ export default function Home() {
 		() => minWorkTime + (maxWorkTime - minWorkTime) / 2,
 		[minWorkTime, maxWorkTime]
 	);
-
-	const handleClick = useCallback(() => {
+	const calculate = useSWRMutation("calculate", async () => {
+		await delay(500);
 		const x = [minWorkTime * workAmount, middleWorkTime * workAmount, maxWorkTime * workAmount];
 		const w = [easy, normal, hard];
 		const n = x.length;
@@ -54,7 +55,8 @@ export default function Home() {
 				workHours
 			)}시간)\n\nBE 개발자 1인 당 (4인 기준): ${beautifyNumber(workDaysPerPerson)}일`
 		);
-	}, [minWorkTime, maxWorkTime, middleWorkTime, workAmount, easy, normal, hard]);
+		return true;
+	});
 
 	return (
 		<VStack py={20} spacing={14} w={600} mx="auto">
@@ -140,11 +142,24 @@ export default function Home() {
 				</HStack>
 				<CommentList items={["단위: 백분율"]} />
 			</SectionStack>
-			<Button w="100%" onClick={handleClick}>
-				Go for it!
-			</Button>
+			<VStack w="100%" spacing={3}>
+				<Button
+					w="100%"
+					isLoading={calculate.isMutating}
+					onClick={() => calculate.trigger()}
+				>
+					Go for it!
+				</Button>
+				<Text fontSize={"xs"} opacity={0.5} fontWeight={"bold"}>
+					소요 시간 * 개발 수량 * 난이도를 가중하여, 가중 평균 시간을 획득
+				</Text>
+			</VStack>
 		</VStack>
 	);
+}
+
+function delay(ms: number) {
+	return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 function weightedMean(x: number[], w: number[], n: number) {
