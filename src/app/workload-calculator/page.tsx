@@ -33,8 +33,8 @@ export default function Home() {
 		normal: 40,
 		hard: 25,
 	});
-	const minWorkTime = useMemo(() => values[0] / 10, [values]);
-	const maxWorkTime = useMemo(() => values[1] / 10, [values]);
+	const minWorkTime = useMemo(() => values[0], [values]);
+	const maxWorkTime = useMemo(() => values[1], [values]);
 	const middleWorkTime = useMemo(
 		() => minWorkTime + (maxWorkTime - minWorkTime) / 2,
 		[minWorkTime, maxWorkTime]
@@ -64,11 +64,15 @@ export default function Home() {
 		{
 			onSuccess: ({ workHours, workDays, workDaysPerPerson }) =>
 				alert(
-					`업무 기준: ${beautifyNumber(workDays)}일 (${beautifyNumber(
+					`업무 기준: ${beautifyNumber(
+						workDays
+					).toLocaleString()}일 (${beautifyNumber(
 						workHours
-					)}시간)\n\nBE 개발자 1인 당 (4인 기준): ${beautifyNumber(
+					).toLocaleString()}시간)\n\nBE 개발자 1인 당 (4인 기준): ${beautifyNumber(
 						workDaysPerPerson
-					)}일 (휴일 포함: ${beautifyNumber(containWeekend(workDaysPerPerson))}일)`
+					).toLocaleString()}일 (휴일 포함: ${beautifyNumber(
+						containWeekend(workDaysPerPerson)
+					).toLocaleString()}일)`
 				),
 		}
 	);
@@ -98,7 +102,7 @@ export default function Home() {
 					<RangeSliderThumb index={0} />
 					<RangeSliderThumb index={1} />
 					<RangeSliderMark value={values[0]} mt={3} fontSize={"2xs"} fontWeight={"bold"}>
-						최소 업무 시간: {values[0] / 10}일
+						최소 업무 시간: {values[0]}시간
 					</RangeSliderMark>
 					<RangeSliderMark
 						value={values[1]}
@@ -107,7 +111,7 @@ export default function Home() {
 						fontWeight={"bold"}
 						whiteSpace={"nowrap"}
 					>
-						최대 업무 시간: {values[1] / 10}일
+						최대 업무 시간: {values[1]}시간
 					</RangeSliderMark>
 				</RangeSlider>
 				<CommentList
@@ -134,21 +138,21 @@ export default function Home() {
 				<SectionTitle>개발 난이도 비중을 각각 입력하세요.</SectionTitle>
 				<HStack spacing={4}>
 					<NumberInputWithTitle
-						title={`쉬움 (${minWorkTime}일 소요)`}
+						title={`쉬움 (${minWorkTime}시간 소요)`}
 						value={easy}
 						handleChange={(value) =>
 							setDifficulty((previous) => ({ ...previous, easy: Number(value) }))
 						}
 					/>
 					<NumberInputWithTitle
-						title={`일반적임 (${beautifyNumber(middleWorkTime)}일 소요)`}
+						title={`일반적임 (${beautifyNumber(middleWorkTime)}시간 소요)`}
 						value={normal}
 						handleChange={(value) =>
 							setDifficulty((previous) => ({ ...previous, normal: Number(value) }))
 						}
 					/>
 					<NumberInputWithTitle
-						title={`어려움 (복잡도 or 절대량, ${maxWorkTime}일 소요)`}
+						title={`어려움 (복잡도 or 절대량, ${maxWorkTime}시간 소요)`}
 						value={hard}
 						handleChange={(value) =>
 							setDifficulty((previous) => ({ ...previous, hard: Number(value) }))
