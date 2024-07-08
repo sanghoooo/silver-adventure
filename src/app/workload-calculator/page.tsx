@@ -91,7 +91,7 @@ export default function Home() {
 				<RangeSlider
 					aria-label={["min", "max"]}
 					min={1}
-					max={100}
+					max={200}
 					value={values}
 					onChange={(val) => setValues(val)}
 					my={5}
